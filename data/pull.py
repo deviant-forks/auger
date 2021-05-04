@@ -8,9 +8,10 @@ import httpx
 
 
 #[WHAT IS THIS]
-#It scrapes the URL's list for their rss XML feeds and commits them to a postgres db.
-#It also uses an exception to do this which is emphasiszed for flow control in Python. Wild right? 
-# XML is handled by Element Tree, and HTML is handled by BeautifulSoup.
+'''
+This scrapes a list of xml feeds located in urls.py in the URLS var for
+their links, titles, and up to 250 characters of their initial entry for the summaries.
+'''
 
 #open initial connection
 conn = psycopg2.connect("")

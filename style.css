@@ -94,7 +94,7 @@ ul {
 }
 
 li {
-    line-height: 1.0;
+    line-height: 1.5;
 }
 
 .flow>*+* {
@@ -120,6 +120,12 @@ li {
     font-size: 15px;
     margin-bottom: 4px;
     line-break: 5px;
+}
+
+.uri_d a:link{
+    color: inherit;
+    text-decoration: none;
+
 }
 
 
