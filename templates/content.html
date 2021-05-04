@@ -2,7 +2,9 @@
 
 {% for i in data %}
 <li><a href={{i[1]}}>{{i[0]}}</a> - <date>{{i[2]}}</date></li>
-<img src="{{i[3]}}" width="12" height="12"> <span style="font-size: 20px;">{{i[4]}}</span>
+<p class="summary">Sed vehicula ligula vel lectus porttitor porta. Donec sodales scelerisque justo vel luctus. Proin tincidunt tempus tellus. Praesent placerat vel magna eget dapibus. ...</p>
+<img class="favicon_d" src="{{i[3]}}"> <span class="uri_d" style="font-size: 20px;">{{i[4]}}</span>
+
 {% endfor %}
 
 {% endblock %}

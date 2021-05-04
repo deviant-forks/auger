@@ -94,7 +94,7 @@ ul {
 }
 
 li {
-    line-height: .5;
+    line-height: 1.0;
 }
 
 .flow>*+* {
@@ -111,5 +111,20 @@ li {
 
 .flow-5>*+* {
     margin-top: var(--s-5);
+}
+
+
+
+
+.summary {
+    font-size: 15px;
+    margin-bottom: 4px;
+    line-break: 5px;
+}
+
+
+.favicon_d{
+    width: 12px;
+    height: 12px;
 }
 
