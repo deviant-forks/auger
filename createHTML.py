@@ -55,41 +55,15 @@ def makeHTML(template):
     pnum = []
     for page_number, page_entries in enumerate(entries):
         pnum.append(str(page_number))
+        
     for page_number, page_entries in enumerate(entries):
         with open(filename, 'w+') as fw:
             fw.write(template.render(data=page_entries, pg=pnum))
-            fw.close()
+            fw.close() #closes out of end.html and writes to new files generated below.
             fw = open('page/%s.html' % page_number, 'w')
             fw.write(template.render(data=page_entries, pg=pnum))
-    print(pnum)
-    
-    #this is where I tried to create that second for loop that overwrites data
-    #for page_number, page_entries in enumerate(entries):
-        #with open(filename, 'w+') as fw:
-            #fw = open('page/%s.html' % page_number, 'w')
-            #fw.write(template.render(pg=pnum))
-            #fw.close()
-
             
-
-        
-        
-        
-        
-        
-    
-    #filename = os.path.join(os.getcwd(), 'index.html')
-    #with open(filename, 'w+') as fw:
-        #fw.write(template.render())
-
-
-    #filename = os.path.join(os.getcwd(), 'index.html')
-    #First we write to index.html.
-    #with open(filename, 'w+') as fw:
-        #fw.write(template.render(data=data))
-
 def main():
-    #pg_to_list()
     makeHTML(loadTemplate())
 
 if __name__ == '__main__':
