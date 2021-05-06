@@ -17,6 +17,8 @@ conn = psycopg2.connect("")
 #open initial cursor
 cur = conn.cursor()
 
+
+
 async def main():
     async with httpx.AsyncClient() as client:
         for url in URLS:
@@ -46,23 +48,28 @@ async def main():
                     summary = [x.text for x in syn if x.tag.split("}")[1] == "summary"]
                     content = [x.text for x in syn if x.tag.split("}")[1] == "content"]
                     description = [x.text for x in syn if x.tag.split("}")[1] == "description"]
-                    #temp
                     link_url = [x.attrib["href"] for x in syn if x.tag.split("}")[1] == "link"]
                     
                     if summary is not None:
                         summary_to_string = summary
                         string_summary = str(summary_to_string)
                         processed_summary = strip_tags(string_summary)
+                        summary_to_db = processed_summary[:100].strip("[").strip("]")
+                        cur.execute("UPDATE posts SET article_summary = (%s) WHERE article_url = (%s);", (summary_to_db, link_url[0]))
                         
                     if content is not None:
                         content_to_string = content
                         string_content = str(content_to_string)
                         processed_content = strip_tags(string_content)
+                        content_to_db = processed_content[:100].strip("[").strip("]")
+                        cur.execute("UPDATE posts SET article_summary = (%s) WHERE article_url = (%s);", (content_to_db, link_url[0]))
                         
                     if description is not None:
                         description_to_string = description
                         string_description = str(description_to_string)
                         processed_description = strip_tags(string_description)
+                        description_to_db = processed_description[:100].strip("[").strip("]")
+                        cur.execute("UPDATE posts SET article_summary = (%s) WHERE article_url = (%s);", (description_to_db, link_url[0]))
                         
 
                                         
@@ -77,22 +84,26 @@ async def main():
                             summary_to_string = summary
                             string_summary = str(summary_to_string)
                             processed_summary = strip_tags(string_summary)
+                            summary_to_db = processed_summary[:100].strip("[").strip("]")
+                            #cur.execute("UPDATE posts SET article_summary = (%s) WHERE article_url = (%s);", (summary_to_db, link_url[0]))
+
                             
                         if content is not None:
                             content_to_string = content
                             string_content = str(content_to_string)
                             processed_content = strip_tags(string_content)
+                            content_to_db = processed_content[:100].strip("[").strip("]")
+                            #cur.execute("UPDATE posts SET article_summary = (%s) WHERE article_url = (%s);", (content_to_db, link_url[0]))
                         
                         if description is not None:
                             description_to_string = description
                             string_description = str(description_to_string)
                             processed_description = strip_tags(string_description)
-
-                            
-                if processed_summary or processed_content or processed_description:
-                    print(f"PROCESSED SUMMARY {processed_summary[:5]} at {link_url}, {url}")
-                    print(f"PROCESSED CONTENT {processed_content[:5]} at {link_url}, {url}")
-                    print(f"PROCESSED DESCRIPTION  {processed_description[:200]} at {link_url}, {url}")
+                            description_to_db = processed_description[:100].strip("[").strip("]")
+                            #cur.execute("UPDATE posts SET article_summary = (%s) WHERE article_url = (%s);", (description_to_db, link_url[0]))
+        #conn.commit()                
+        cur.close()
+        conn.close()  
 
 
 #strip html tags from string.
@@ -115,8 +126,6 @@ def strip_tags(html):
     s.feed(html)
     return s.get_data()
                              
-cur.close()
-conn.close()  
 
 if __name__ == '__main__':
     asyncio.run(main())
