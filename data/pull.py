@@ -5,12 +5,10 @@ import asyncio
 import httpx
 
 
-
-
-#[WHAT IS THIS]
 '''
+[WHAT IS THIS]
 This scrapes a list of xml feeds located in urls.py in the URLS var for
-their links, titles, and up to 250 characters of their initial entry for the summaries.
+their links and titles.
 '''
 
 #open initial connection
@@ -18,6 +16,9 @@ conn = psycopg2.connect("")
 
 #open initial cursor
 cur = conn.cursor()
+
+#summary character limit
+summary_char_limit = 128
 
 async def main():
     async with httpx.AsyncClient() as client:
@@ -50,9 +51,7 @@ async def main():
                 try:
                     title = [x.text for x in link if x.tag.split("}")[1] == "title"]
                     link_url = [x.attrib["href"] for x in link if x.tag.split("}")[1] == "link"]
-                    
-                    print("LINK_URL", link_url)
-                    
+                                        
                     if title and link_url:
                         print("Found {} with HREF {}".format(title, link_url))
                         
@@ -63,6 +62,8 @@ async def main():
                     if link is not None:
                         title = [link[0].text]
                         link_url = [link.findtext('link')]
+                        summary = [link.findtext('description') or link.findtext('summary')]
+                        print("SUMMARY EXCEPT:", summary)
                     else:
                         print(f"IS NONE: {link} and {link_url} ")
                     

@@ -39,7 +39,7 @@ Scrapes the dates from each article of each website in the list of urls and subm
 This is the third script that Cron runs seconds after date.py. 
 It's job is to look for any tables/rows that might be missing data and delete them.
 
-### metadata.py
+### data/favi_host.py
 
 This uses beautiful soup to scrape the html pages. This does not use the url.py files, instead to match the favicons and host website to their corresponding blog post in the database, we pull the list of all current articles in the database, use sql to remove the majority of the hyperlink and just keep the literal site url. This is then submitted to a list which python iterates through and beautiful soup scrapes the favicons from. Afterwards, we combine the host url we stripped out earlier and the directory of the favicons we scraped using urllib. 
 

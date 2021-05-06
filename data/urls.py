@@ -1,4 +1,5 @@
 URLS =  [
+        "https://ftrv.se/posts.rss",
         "http://nonmateria.com/rss.xml",
         "https://notes.neeasade.net/rss.xml",
         "https://aless.co/rss.xml",
