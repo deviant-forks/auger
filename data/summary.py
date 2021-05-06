@@ -1,14 +1,12 @@
-from bs4 import BeautifulSoup
-import urllib.parse
+from urls import URLS
+import xml.etree.ElementTree as ET
 import psycopg2
 import asyncio
 import httpx
 
-
 '''
 [WHAT IS THIS]
-This scrapes a list of xml feeds located in urls.py in the URLS var for
-their links and titles.
+This scrapes xml for it's article content or summary.
 '''
 
 #open initial connection
@@ -17,53 +15,58 @@ conn = psycopg2.connect("")
 #open initial cursor
 cur = conn.cursor()
 
-sql_extract_article_url = '''select posts(%s);
-'''
-
 select_urls_from_post = '''
 SELECT article_url FROM posts;
 ''' 
 
+update_transact = """
+UPDATE posts SET article_host = %s, article_favicon = %s WHERE article_url ILIKE '%' || %s || '%', 
+"""
+
 async def main():
-    db_urls = row_match()
     async with httpx.AsyncClient() as client:
-        for url in db_urls:
-            try:
+        for url in URLS:
+            try: 
                 response = await client.get(url, timeout=30.0)
                 
             except httpx.RequestError as exc:
-                print(f"An error occured while making request {exc.request.url!r}.")
-                
-            try: 
-                root = BeautifulSoup(response.text, features="lxml")
+                print(f"An error occurred while requesting {exc.request.url!r}.")
+                continue
             
-            except:
-                print("exception caught after second try.")
-                
             try:
-                print(url, root)
-                
+                #give root a body of XML as a string.
+                root = ET.fromstring(response.text)
+                                
             except:
-                print("fail")
-
-def row_match():
-    cur.execute(select_urls_from_post)
-    all_articles = cur.fetchall()
-    stg_urls = []
-    
-    for article in all_articles:
-        staged_articles = article
-        print(staged_articles)
-        if staged_articles is not None:
-            stg_urls.append(staged_articles) #We break a list, add it to another lol
-        else:
-            print("else else", staged_articles)   
-        
-    return stg_urls
-
+                continue
+            
+            try:
+                synopsis = [x for x in root if x.tag.split("}")[1] in ("entry", "item")]
+            
+            except IndexError:
+                synopsis = [x for x in root if x.tag in ("entry", "item")]
+                
+            for syn in synopsis:
+                try:
+                    summary = [x.text for x in syn if x.tag.split("}")[1] == "summary"]
+                    content = [x.text for x in syn if x.tag.split("}")[1] == "content"]
+                    
+                    if summary:
+                        print(f"Found SUMMARY {summary[:200]} at {url}")
+                    if content:
+                        print(f"Found CONTENT {content[:200]} at {url}")
+                                        
+                except IndexError:
+                    
+                    if synopsis is not None:
+                        print(synopsis)
+                        
+                    
+                
+                
+                         
+cur.close()
+conn.close()  
 
 if __name__ == '__main__':
     asyncio.run(main())
-    
-cur.close()
-conn.close()

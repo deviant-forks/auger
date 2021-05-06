@@ -62,8 +62,6 @@ async def main():
                     if link is not None:
                         title = [link[0].text]
                         link_url = [link.findtext('link')]
-                        summary = [link.findtext('description') or link.findtext('summary')]
-                        print("SUMMARY EXCEPT:", summary)
                     else:
                         print(f"IS NONE: {link} and {link_url} ")
                     
