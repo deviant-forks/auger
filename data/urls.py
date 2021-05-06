@@ -85,11 +85,3 @@ URLS_HTML =  [
         "https://www.gr0k.net",
         "https://tendigits.space",
         "https://wiki.xxiivv.com"]
-
-SYNOPSIS_IGNORE = [
-        "https://notes.neeasade.net/rss.xml",
-        "http://nonmateria.com/rss.xml",
-        
-        
-        
-]

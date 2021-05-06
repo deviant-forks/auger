@@ -20,8 +20,9 @@ cur = conn.cursor()
 async def main():
     async with httpx.AsyncClient() as client:
         for url in URLS:
-            try: 
+            try:  
                 response = await client.get(url, timeout=30.0)
+
                 
             except httpx.RequestError as exc:
                 print(f"An error occurred while requesting {exc.request.url!r}.")
@@ -52,19 +53,17 @@ async def main():
                         summary_to_string = summary
                         string_summary = str(summary_to_string)
                         processed_summary = strip_tags(string_summary)
-                        print(f"Found SUMMARY {processed_summary} at {link_url}")
                         
                     if content is not None:
                         content_to_string = content
                         string_content = str(content_to_string)
                         processed_content = strip_tags(string_content)
-                        print(f"Found CONTENT {processed_content} at {link_url}")
                         
                     if description is not None:
                         description_to_string = description
                         string_description = str(description_to_string)
                         processed_description = strip_tags(string_description)
-                        print(f"Found CONTENT {processed_description} at {link_url}")
+                        
 
                                         
                 except IndexError:
@@ -78,21 +77,24 @@ async def main():
                             summary_to_string = summary
                             string_summary = str(summary_to_string)
                             processed_summary = strip_tags(string_summary)
-                            print(f"EXCEPT SUMMARY FOUND: {processed_summary} at {link_url}")
                             
                         if content is not None:
                             content_to_string = content
                             string_content = str(content_to_string)
                             processed_content = strip_tags(string_content)
-                            print(f"EXCEPT CONTENT FOUND: {processed_content} at {link_url}")
-                            
+                        
                         if description is not None:
                             description_to_string = description
                             string_description = str(description_to_string)
                             processed_description = strip_tags(string_description)
-                            print(f"EXCEPT DESCRIPTION FOUND: {processed_description} at {link_url}")
-                                            
-                    
+
+                            
+                if processed_summary or processed_content or processed_description:
+                    print(f"PROCESSED SUMMARY {processed_summary[:5]} at {link_url}, {url}")
+                    print(f"PROCESSED CONTENT {processed_content[:5]} at {link_url}, {url}")
+                    print(f"PROCESSED DESCRIPTION  {processed_description[:200]} at {link_url}, {url}")
+
+
 #strip html tags from string.
 
 class MLStripper(HTMLParser):
@@ -112,10 +114,7 @@ def strip_tags(html):
     s = MLStripper()
     s.feed(html)
     return s.get_data()
-
-                
-                
-                         
+                             
 cur.close()
 conn.close()  
 
