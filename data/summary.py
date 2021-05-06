@@ -1,4 +1,6 @@
 from urls import URLS
+from io import StringIO
+from html.parser import HTMLParser
 import xml.etree.ElementTree as ET
 import psycopg2
 import asyncio
@@ -14,14 +16,6 @@ conn = psycopg2.connect("")
 
 #open initial cursor
 cur = conn.cursor()
-
-select_urls_from_post = '''
-SELECT article_url FROM posts;
-''' 
-
-update_transact = """
-UPDATE posts SET article_host = %s, article_favicon = %s WHERE article_url ILIKE '%' || %s || '%', 
-"""
 
 async def main():
     async with httpx.AsyncClient() as client:
@@ -51,17 +45,46 @@ async def main():
                     summary = [x.text for x in syn if x.tag.split("}")[1] == "summary"]
                     content = [x.text for x in syn if x.tag.split("}")[1] == "content"]
                     
-                    if summary:
-                        print(f"Found SUMMARY {summary[:200]} at {url}")
-                    if content:
-                        print(f"Found CONTENT {content[:200]} at {url}")
+                    if summary is not None:
+                        summary_to_string = summary
+                        string_summary = str(summary_to_string)
+                        processed_summary = strip_tags(string_summary)
+                        print(f"Found SUMMARY {processed_summary} at {url}")
+                        
+                    if content is not None:
+                        content_to_string = content
+                        string_content = str(content_to_string)
+                        processed_content = strip_tags(string_content)
+                        print(f"Found CONTENT {processed_content} at {url}")
+                    else:
+                        print("scream")
                                         
                 except IndexError:
                     
                     if synopsis is not None:
-                        print(synopsis)
+                        print("test")
                         
                     
+#strip html tags from string.
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.fed = []
+        self.strict = False
+        self.convert_charrefs = True
+        self.text = StringIO()
+    def handle_data(self, d):
+        self.text.write(d)
+    def get_data(self):
+        return self.text.getvalue()
+    
+def strip_tags(html):
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
+
                 
                 
                          
