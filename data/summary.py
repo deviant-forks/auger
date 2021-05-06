@@ -38,32 +38,60 @@ async def main():
                 synopsis = [x for x in root if x.tag.split("}")[1] in ("entry", "item")]
             
             except IndexError:
-                synopsis = [x for x in root if x.tag in ("entry", "item")]
+                synopsis = [x for x in root[0] if x.tag in ("entry", "item")]
                 
             for syn in synopsis:
                 try:
                     summary = [x.text for x in syn if x.tag.split("}")[1] == "summary"]
                     content = [x.text for x in syn if x.tag.split("}")[1] == "content"]
+                    description = [x.text for x in syn if x.tag.split("}")[1] == "description"]
+                    #temp
+                    link_url = [x.attrib["href"] for x in syn if x.tag.split("}")[1] == "link"]
                     
                     if summary is not None:
                         summary_to_string = summary
                         string_summary = str(summary_to_string)
                         processed_summary = strip_tags(string_summary)
-                        print(f"Found SUMMARY {processed_summary} at {url}")
+                        print(f"Found SUMMARY {processed_summary} at {link_url}")
                         
                     if content is not None:
                         content_to_string = content
                         string_content = str(content_to_string)
                         processed_content = strip_tags(string_content)
-                        print(f"Found CONTENT {processed_content} at {url}")
-                    else:
-                        print("scream")
+                        print(f"Found CONTENT {processed_content} at {link_url}")
+                        
+                    if description is not None:
+                        description_to_string = description
+                        string_description = str(description_to_string)
+                        processed_description = strip_tags(string_description)
+                        print(f"Found CONTENT {processed_description} at {link_url}")
+
                                         
                 except IndexError:
-                    
-                    if synopsis is not None:
-                        print("test")
+                        summary = [syn.findtext('summary')]
+                        content = [syn.findtext('content')]
+                        description = [syn.findtext('description')]
+                        #temp
+                        link_url = [syn.findtext('link')]
                         
+                        if summary is not None:
+                            summary_to_string = summary
+                            string_summary = str(summary_to_string)
+                            processed_summary = strip_tags(string_summary)
+                            print(f"EXCEPT SUMMARY FOUND: {processed_summary} at {link_url}")
+                            
+                        if content is not None:
+                            content_to_string = content
+                            string_content = str(content_to_string)
+                            processed_content = strip_tags(string_content)
+                            print(f"EXCEPT CONTENT FOUND: {processed_content} at {link_url}")
+                            
+                        if description is not None:
+                            description_to_string = description
+                            string_description = str(description_to_string)
+                            processed_description = strip_tags(string_description)
+                            print(f"EXCEPT DESCRIPTION FOUND: {processed_description} at {link_url}")
+                                            
                     
 #strip html tags from string.
 
